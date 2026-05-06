@@ -74,6 +74,6 @@ com.example.mysouq
 
 ---
 
-## 📝 Auteur
-Développé par **Yahya & Équipe**.
+## 📝 Auteurs
+Développé par **Fatima Zahrae & Aristide**.
 Version : **1.0.2**
