@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,19 +18,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mysouq.domain.model.Category
 import com.example.mysouq.domain.model.Product
 import com.example.mysouq.ui.common.UiState
+import com.example.mysouq.ui.components.CategoryItem
+import com.example.mysouq.ui.components.ErrorState
+import com.example.mysouq.ui.components.ProductCard
 import com.example.mysouq.ui.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 
@@ -47,9 +47,9 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Sticky Search Bar (Temu Style)
+        // Sticky Search Bar
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.primary,
@@ -61,18 +61,13 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Rechercher un trésor...", color = Color.Gray) },
+                placeholder = { Text("Rechercher un trésor...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    IconButton(onClick = { /* Photo Search? */ }) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null)
-                    }
-                },
                 singleLine = true,
                 shape = RoundedCornerShape(24.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 )
@@ -96,9 +91,10 @@ fun HomeScreen(
                 )
             }
             is UiState.Error -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Erreur : ")
-                }
+                ErrorState(
+                    message = state.message ?: "Impossible de charger les produits",
+                    onRetry = { /* viewModel.load() */ }
+                )
             }
         }
     }
@@ -115,41 +111,34 @@ fun ProductGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp)
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize()
     ) {
-        // --- 1. Banner Carousel ---
         item(span = { GridItemSpan(2) }) {
             BannerCarousel()
         }
 
-        // --- 2. Categories Circular (Temu style) ---
         item(span = { GridItemSpan(2) }) {
             CategoryStrip(selectedCategory, onCategorySelect)
         }
 
-        // --- 3. Flash Sales Section ---
         item(span = { GridItemSpan(2) }) {
             FlashSaleSection(products.take(3), onProductClick)
         }
 
-        // --- 4. Main Grid Header ---
         item(span = { GridItemSpan(2) }) {
             Text(
                 text = "Inspiré par vos goûts",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
-        // --- 5. Products ---
         items(products, key = { it.id }) { product ->
-            ModernProductCard(
+            ProductCard(
                 product = product,
                 onClick = { onProductClick(product.id) },
                 onFavoriteClick = { onFavoriteClick(product.id) },
@@ -162,36 +151,43 @@ fun ProductGrid(
 @Composable
 fun BannerCarousel() {
     val banners = listOf(
-        "Offres du Ramadan : Jusqu'à -50%" to Color(0xFFE91E63),
-        "Artisanat de Fès : Edition Limitée" to Color(0xFF3F51B5),
+        "Offres du Ramadan : Jusqu'à -50%" to MaterialTheme.colorScheme.primary,
+        "Artisanat de Fès : Edition Limitée" to MaterialTheme.colorScheme.secondary,
         "Livraison Gratuite dès 500 DH" to Color(0xFF4CAF50)
     )
     var currentIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(4000)
+            delay(5000)
             currentIndex = (currentIndex + 1) % banners.size
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(banners[currentIndex].second)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = banners[currentIndex].first,
-            color = Color.White,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.ExtraBold,
-            textAlign = TextAlign.Center
-        )
+    AnimatedContent(
+        targetState = currentIndex,
+        transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        },
+        label = "BannerTransition"
+    ) { index ->
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(banners[index].second)
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = banners[index].first,
+                color = Color.White,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -201,8 +197,8 @@ fun CategoryStrip(
     onCategorySelect: (Category?) -> Unit
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             CategoryItem(
@@ -224,111 +220,48 @@ fun CategoryStrip(
 }
 
 @Composable
-fun CategoryItem(
-    label: String,
-    icon: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.White)
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = icon, fontSize = 24.sp)
-        }
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
-}
-
-@Composable
 fun FlashSaleSection(
     products: List<Product>,
     onProductClick: (Int) -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
-        shape = RoundedCornerShape(12.dp)
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "VENTES FLASH",
-                    color = Color(0xFFE65100),
-                    fontWeight = FontWeight.Black,
-                    fontSize = 18.sp
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                // Timer badge
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black)
-                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                Spacer(modifier = Modifier.weight(1f))
+                Surface(
+                    color = Color.Black,
+                    shape = RoundedCornerShape(4.dp)
                 ) {
-                    Text("02:45:12", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "02:45:12",
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
                 }
             }
             
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 12.dp)
             ) {
                 items(products) { product ->
-                    Column(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .clickable { onProductClick(product.id) }
-                    ) {
-                        Box {
-                            AsyncImage(
-                                model = product.imageUrl,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .background(Color.Red, RoundedCornerShape(bottomEnd = 8.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                            ) {
-                                Text("-25%", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                        Text(
-                            text = (product.price * 0.75).toString() + " DH",
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                        Text(
-                            text = product.price.toString() + " DH",
-                            color = Color.Gray,
-                            fontSize = 10.sp,
-                            textDecoration = TextDecoration.LineThrough
-                        )
-                    }
+                    FlashSaleItem(product, onProductClick)
                 }
             }
         }
@@ -336,113 +269,49 @@ fun FlashSaleSection(
 }
 
 @Composable
-fun ModernProductCard(
-    product: Product,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    onAddToCartClick: () -> Unit
-) {
-    Card(
+fun FlashSaleItem(product: Product, onProductClick: (Int) -> Unit) {
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            .width(110.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(8.dp)
+            .clickable { onProductClick(product.id) }
     ) {
-        Column {
-            Box {
-                AsyncImage(
-                    model = product.imageUrl,
-                    contentDescription = product.name,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    contentScale = ContentScale.Crop
-                )
-                
-                // Badge "Artisan"
-                Surface(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .align(Alignment.TopStart),
-                    color = Color.Black.copy(alpha = 0.6f),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = "Authentique",
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                    )
-                }
-
-                IconButton(
-                    onClick = onFavoriteClick,
-                    modifier = Modifier.align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        imageVector = if (product.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        tint = if (product.isFavorite) Color.Red else Color.White
-                    )
-                }
-            }
-            
-            Column(modifier = Modifier.padding(8.dp)) {
+        Box {
+            AsyncImage(
+                model = product.imageUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(94.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Surface(
+                color = Color.Red,
+                shape = RoundedCornerShape(bottomEnd = 8.dp),
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
                 Text(
-                    text = product.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    minLines = 2
+                    "-25%",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                 )
-                
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
-                    Text(text = " " + product.rating, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    Text(text = " (" + product.reviewCount + "+)", fontSize = 12.sp, color = Color.Gray)
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Column {
-                        Text(
-                            text = product.price.toString() + " DH",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Black,
-                            color = Color.Black
-                        )
-                        Text(
-                            text = "Livraison Gratuite",
-                            fontSize = 10.sp,
-                            color = Color(0xFF4CAF50),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    
-                    IconButton(
-                        onClick = onAddToCartClick,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddShoppingCart,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
             }
         }
+        Text(
+            text = "${(product.price * 0.75).toInt()} DH",
+            color = Color.Red,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = "${product.price} DH",
+            color = MaterialTheme.colorScheme.outline,
+            style = MaterialTheme.typography.labelSmall,
+            textDecoration = TextDecoration.LineThrough
+        )
     }
 }

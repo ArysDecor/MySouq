@@ -177,7 +177,35 @@ fun MainApp() {
             }
             composable(Screen.Profile.route) {
                 val viewModel: ProfileViewModel = hiltViewModel()
-                ProfileScreen(viewModel = viewModel)
+                ProfileScreen(
+                    viewModel = viewModel,
+                    onNavigateToOrders = { navController.navigate(Screen.Orders.route) },
+                    onNavigateToAddresses = { navController.navigate(Screen.Addresses.route) },
+                    onNavigateToPayments = { navController.navigate(Screen.Payments.route) },
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    onLoginClick = { navController.navigate(Screen.Home.route) } // Placeholder
+                )
+            }
+            composable(Screen.Orders.route) {
+                val viewModel: OrdersViewModel = hiltViewModel()
+                OrdersScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.Addresses.route) {
+                val viewModel: AddressesViewModel = hiltViewModel()
+                AddressesScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.Payments.route) {
+                val viewModel: PaymentsViewModel = hiltViewModel()
+                PaymentsScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(Screen.Settings.route) {
                 val viewModel: SettingsViewModel = hiltViewModel()

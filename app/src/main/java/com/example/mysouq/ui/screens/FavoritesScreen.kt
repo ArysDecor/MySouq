@@ -1,5 +1,6 @@
 ﻿package com.example.mysouq.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -8,8 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mysouq.ui.common.UiState
+import com.example.mysouq.ui.components.ErrorState
+import com.example.mysouq.ui.components.ProductCard
 import com.example.mysouq.ui.viewmodel.FavoritesViewModel
 
 @Composable
@@ -19,11 +23,17 @@ fun FavoritesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Text(
             text = "Mes Coups de Cœur",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp)
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         when (val state = uiState) {
@@ -34,19 +44,17 @@ fun FavoritesScreen(
             }
             is UiState.Success -> {
                 if (state.data.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Aucun favori pour le moment")
-                    }
+                    EmptyFavorites()
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.data, key = { it.id }) { product ->
-                            ModernProductCard(
+                            ProductCard(
                                 product = product,
                                 onClick = { onProductClick(product.id) },
                                 onFavoriteClick = { viewModel.toggleFavorite(product.id) },
@@ -57,10 +65,34 @@ fun FavoritesScreen(
                 }
             }
             is UiState.Error -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Erreur : ")
-                }
+                ErrorState(
+                    message = state.message ?: "Impossible de charger vos favoris",
+                    onRetry = { /* viewModel.load() */ }
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun EmptyFavorites() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "💝",
+                style = MaterialTheme.typography.displayLarge
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Aucun favori pour le moment",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.outline
+            )
+            Text(
+                text = "Explorez nos trésors pour en ajouter !",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline
+            )
         }
     }
 }
