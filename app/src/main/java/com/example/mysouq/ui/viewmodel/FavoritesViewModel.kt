@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mysouq.domain.model.Product
 import com.example.mysouq.domain.model.Result
-import com.example.mysouq.domain.repository.CartRepository
-import com.example.mysouq.domain.repository.FavoriteRepository
-import com.example.mysouq.domain.repository.ProductRepository
+import com.example.mysouq.domain.usecase.AddToCartUseCase
+import com.example.mysouq.domain.usecase.GetFavoritesUseCase
+import com.example.mysouq.domain.usecase.ToggleFavoriteUseCase
 import com.example.mysouq.ui.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -15,12 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    private val productRepository: ProductRepository,
-    private val favoriteRepository: FavoriteRepository,
-    private val cartRepository: CartRepository
+    private val getFavoritesUseCase: GetFavoritesUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val addToCartUseCase: AddToCartUseCase
 ) : ViewModel() {
 
-    val uiState: StateFlow<UiState<List<Product>>> = productRepository.observeFavorites()
+    val uiState: StateFlow<UiState<List<Product>>> = getFavoritesUseCase()
         .map { result ->
             when (result) {
                 is Result.Success -> UiState.Success(result.data)
@@ -36,13 +36,13 @@ class FavoritesViewModel @Inject constructor(
 
     fun toggleFavorite(productId: Int) {
         viewModelScope.launch {
-            favoriteRepository.toggleFavorite(productId)
+            toggleFavoriteUseCase(productId)
         }
     }
 
     fun addToCart(productId: Int) {
         viewModelScope.launch {
-            cartRepository.addToCart(productId)
+            addToCartUseCase(productId)
         }
     }
 }

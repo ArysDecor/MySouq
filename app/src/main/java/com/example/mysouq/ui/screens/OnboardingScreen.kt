@@ -2,7 +2,6 @@
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.mysouq.ui.components.AppLogo
 
 @Composable
 fun OnboardingScreen(
@@ -51,8 +51,15 @@ fun OnboardingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
+            AppLogo(
+                modifier = Modifier.size(80.dp),
+                showText = true
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+
             Text(
-                text = "Bienvenue chez\nMySouq",
+                text = "Authenticité\n& Tradition",
                 color = Color.White,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Black,

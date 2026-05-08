@@ -4,21 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mysouq.domain.model.Category
 import com.example.mysouq.domain.model.Product
-import com.example.mysouq.domain.model.Result
-import com.example.mysouq.domain.repository.CartRepository
-import com.example.mysouq.domain.repository.FavoriteRepository
-import com.example.mysouq.domain.repository.ProductRepository
+import com.example.mysouq.domain.usecase.AddToCartUseCase
+import com.example.mysouq.domain.usecase.GetProductsUseCase
+import com.example.mysouq.domain.usecase.ToggleFavoriteUseCase
 import com.example.mysouq.ui.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.example.mysouq.domain.model.Result
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val productRepository: ProductRepository,
-    private val favoriteRepository: FavoriteRepository,
-    private val cartRepository: CartRepository
+    private val getProductsUseCase: GetProductsUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val addToCartUseCase: AddToCartUseCase
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -28,7 +29,7 @@ class HomeViewModel @Inject constructor(
     val selectedCategory = _selectedCategory.asStateFlow()
 
     val uiState: StateFlow<UiState<List<Product>>> = combine(
-        productRepository.observeAll(),
+        getProductsUseCase(),
         _searchQuery,
         _selectedCategory
     ) { result, query, category ->
@@ -50,12 +51,6 @@ class HomeViewModel @Inject constructor(
         initialValue = UiState.Loading
     )
 
-    init {
-        viewModelScope.launch {
-            productRepository.seedDatabase()
-        }
-    }
-
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
     }
@@ -66,13 +61,13 @@ class HomeViewModel @Inject constructor(
 
     fun toggleFavorite(productId: Int) {
         viewModelScope.launch {
-            favoriteRepository.toggleFavorite(productId)
+            toggleFavoriteUseCase(productId)
         }
     }
 
     fun addToCart(productId: Int) {
         viewModelScope.launch {
-            cartRepository.addToCart(productId)
+            addToCartUseCase(productId)
         }
     }
 }

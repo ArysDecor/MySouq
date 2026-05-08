@@ -4,13 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mysouq.ui.components.AppLogo
 import com.example.mysouq.ui.navigation.Screen
 import com.example.mysouq.ui.screens.*
 import com.example.mysouq.ui.theme.MySouqTheme
@@ -63,41 +65,46 @@ fun MainApp() {
 
     var showMenu by remember { mutableStateOf(false) }
 
+    // On ne montre pas la TopBar et la BottomBar sur l'écran Splash
+    val isSplashScreen = currentDestination?.route == Screen.Splash.route
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("MySouq") },
-                actions = {
-                    IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+            if (!isSplashScreen) {
+                TopAppBar(
+                    title = { AppLogo(modifier = Modifier.size(32.dp), showText = false) },
+                    actions = {
+                        IconButton(onClick = { showMenu = !showMenu }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Paramètres") },
+                                onClick = {
+                                    showMenu = false
+                                    navController.navigate(Screen.Settings.route)
+                                },
+                                leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("À propos") },
+                                onClick = {
+                                    showMenu = false
+                                    navController.navigate(Screen.About.route)
+                                },
+                                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
+                            )
+                        }
                     }
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Paramètres") },
-                            onClick = {
-                                showMenu = false
-                                navController.navigate(Screen.Settings.route)
-                            },
-                            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("À propos") },
-                            onClick = {
-                                showMenu = false
-                                navController.navigate(Screen.About.route)
-                            },
-                            leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
-                        )
-                    }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
             val showBottomBar = remember(currentDestination) {
-                items.any { item -> currentDestination?.hierarchy?.any { it.route == item.route } == true }
+                !isSplashScreen && items.any { item -> currentDestination?.hierarchy?.any { it.route == item.route } == true }
             }
             if (showBottomBar) {
                 NavigationBar {
@@ -138,9 +145,16 @@ fun MainApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Screen.Splash.route,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(Screen.Splash.route) {
+                SplashScreen(onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                })
+            }
             composable(Screen.Home.route) {
                 val viewModel: HomeViewModel = hiltViewModel()
                 HomeScreen(
@@ -172,7 +186,6 @@ fun MainApp() {
                 )
             }
             composable(Screen.Cart.route) {
-                // Use the same viewModel instance for the screen
                 CartScreen(viewModel = cartViewModel)
             }
             composable(Screen.Profile.route) {

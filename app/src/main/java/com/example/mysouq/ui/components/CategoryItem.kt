@@ -14,6 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.foundation.border
+
 @Composable
 fun CategoryItem(
     label: String,
@@ -24,7 +28,11 @@ fun CategoryItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.clickable(onClick = onClick)
+        modifier = modifier
+            .clickable(
+                onClick = onClick,
+                onClickLabel = "Sélectionner la catégorie $label" // A11y
+            )
     ) {
         Box(
             modifier = Modifier
@@ -34,10 +42,19 @@ fun CategoryItem(
                     if (isSelected) MaterialTheme.colorScheme.primaryContainer 
                     else MaterialTheme.colorScheme.surfaceVariant
                 )
+                .border(
+                    width = if (isSelected) 2.dp else 0.dp,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    shape = CircleShape
+                )
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = icon, fontSize = 28.sp)
+            Text(
+                text = icon, 
+                fontSize = 28.sp,
+                modifier = Modifier.clearAndSetSemantics { } // Icon is decorative, label below handles meaning
+            )
         }
         Text(
             text = label,

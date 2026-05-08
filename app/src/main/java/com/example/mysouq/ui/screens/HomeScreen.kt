@@ -2,6 +2,7 @@
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -35,6 +36,8 @@ import com.example.mysouq.ui.components.ProductCard
 import com.example.mysouq.ui.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 
+import com.example.mysouq.ui.components.ProductCardShimmer
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
@@ -62,7 +65,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 placeholder = { Text("Rechercher un trésor...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Icône de recherche") }, // A11y
                 singleLine = true,
                 shape = RoundedCornerShape(24.dp),
                 colors = TextFieldDefaults.colors(
@@ -76,8 +79,13 @@ fun HomeScreen(
 
         when (val state = uiState) {
             is UiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(6) { ProductCardShimmer() }
                 }
             }
             is UiState.Success -> {
@@ -225,9 +233,11 @@ fun FlashSaleSection(
     onProductClick: (Int) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f), RoundedCornerShape(16.dp)), // Majorelle border
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -236,9 +246,16 @@ fun FlashSaleSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Icon(
+                    Icons.Default.FlashOn, 
+                    contentDescription = null, 
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "VENTES FLASH",
-                    color = MaterialTheme.colorScheme.primary,
+                    text = "OFFRES LIMITÉES",
+                    color = MaterialTheme.colorScheme.tertiary,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Black
                 )
@@ -248,10 +265,10 @@ fun FlashSaleSection(
                     shape = RoundedCornerShape(4.dp)
                 ) {
                     Text(
-                        "02:45:12",
+                        "Expire bientôt",
                         color = Color.White,
                         style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
