@@ -19,18 +19,4 @@
     <string name="about_mission_title">Mission</string>
     <string name="about_mission_text">Description</string>
     <string name="about_developed_by">Yahya</string>
-
-    <!-- Onboarding Screen -->
-    <string name="onboarding_title">Authenticité\n&amp; Tradition</string>
-    <string name="onboarding_subtitle">Découvrez l\'authenticité de l\'artisanat marocain, de Fès à Marrakech.</string>
-    <string name="onboarding_explore">Explorer les Trésors</string>
-    <string name="onboarding_login">Se connecter</string>
-
-    <!-- Favorites Screen -->
-    <string name="favorites_title">MES COUPS DE CŒUR</string>
-    <string name="favorites_empty_title">Aucun favori pour le moment</string>
-    <string name="favorites_empty_subtitle">Explorez nos trésors pour en ajouter !</string>
-
-    <!-- Categories Screen -->
-    <string name="categories_title">PARCOURIR LES CATÉGORIES</string>
 </resources>

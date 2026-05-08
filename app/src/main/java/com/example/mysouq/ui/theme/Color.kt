@@ -13,3 +13,6 @@ val DarkRed = Color(0xFF641E16)
 val ArtisanCream = Color(0xFFFFFBF0)
 val ZelligeEmerald = Color(0xFF006747)
 val Terracotta = Color(0xFFE2725B)
+
+val SunsetOrange = Color(0xFFFF5722)
+val SunsetCoral = Color(0xFFFF4081)

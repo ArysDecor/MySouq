@@ -13,23 +13,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MoroccanRed,
-    secondary = MoroccanGold,
+    primary = SunsetOrange,
+    secondary = SunsetCoral,
     tertiary = MajorelleBlue,
     background = Color(0xFF1A1A1A),
     surface = Color(0xFF2D2D2D),
     onPrimary = Color.White,
-    onSecondary = Color.Black
+    onSecondary = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = MoroccanRed,
-    secondary = MoroccanGold,
+    primary = SunsetOrange,
+    secondary = SunsetCoral,
     tertiary = MajorelleBlue,
     background = ArtisanCream,
     surface = Color.White,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
+    onSecondary = Color.White,
     surfaceVariant = Color(0xFFF4EDE4)
 )
 
@@ -37,8 +37,8 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MySouqTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Desactive dynamicColor pour garder l'identite visuelle Sunset orange
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -7,9 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.SpanStyle
@@ -19,6 +16,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * AppLogo - Version "Bespoke Artisan"
+ * Un logo original qui fusionne l'architecture marocaine (l'arche) 
+ * et la géométrie berbère (le losange).
+ */
 @Composable
 fun AppLogo(
     modifier: Modifier = Modifier,
@@ -28,68 +30,76 @@ fun AppLogo(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Dégradé "Vibrant Sunset" - Très dynamique pour l'e-commerce
-        val gradientColors = listOf(
-            Color(0xFFFF5722), // Deep Orange
-            Color(0xFFFF4081)  // Pinkish Red/Coral
-        )
-        val gradient = Brush.linearGradient(gradientColors)
+        val sunsetOrange = Color(0xFFFF5722)
+        val sunsetCoral = Color(0xFFFF4081)
+        val gradient = Brush.linearGradient(listOf(sunsetOrange, sunsetCoral))
 
-        // L'icône : Un Squircle moderne avec un tracé "S" fluide
         Box(
-            modifier = Modifier.size(34.dp),
+            modifier = Modifier.size(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val w = size.width
                 val h = size.height
-                
-                // Fond Squircle (type iOS/Premium)
-                val rect = Path().apply {
-                    addRoundRect(
-                        RoundRect(
-                            left = 0f, top = 0f, right = w, bottom = h,
-                            cornerRadius = CornerRadius(10.dp.toPx())
-                        )
-                    )
-                }
-                drawPath(path = rect, brush = gradient)
+                val strokeWidth = 3.5.dp.toPx()
 
-                // Le "S" de Souq en blanc pur, tracé de manière fluide
-                val sPath = Path().apply {
-                    moveTo(w * 0.7f, h * 0.3f)
-                    cubicTo(w * 0.4f, h * 0.15f, w * 0.2f, h * 0.45f, w * 0.5f, h * 0.5f)
-                    cubicTo(w * 0.8f, h * 0.55f, w * 0.6f, h * 0.85f, w * 0.3f, h * 0.7f)
+                // Le concept : Une arche de "Souq" formée par un losange ouvert.
+                // Symbolise à la fois l'entrée d'une boutique et la protection.
+                val archPath = Path().apply {
+                    // Start bottom left (open base)
+                    moveTo(w * 0.2f, h * 0.85f)
+                    // Up to middle left
+                    lineTo(w * 0.1f, h * 0.5f)
+                    // Peak (Top center)
+                    lineTo(w * 0.5f, h * 0.1f)
+                    // Down to middle right
+                    lineTo(w * 0.9f, h * 0.5f)
+                    // Down to bottom right (open base)
+                    lineTo(w * 0.8f, h * 0.85f)
                 }
 
                 drawPath(
-                    path = sPath,
-                    color = Color.White,
-                    style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+                    path = archPath,
+                    brush = gradient,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round)
+                )
+
+                // Le point central : "La Perle" ou "Le Trésor" au cœur du Souq.
+                drawCircle(
+                    brush = gradient,
+                    radius = 4.dp.toPx(),
+                    center = center.copy(y = h * 0.55f)
                 )
                 
-                // Petit point "Shopping"
+                // Un petit éclat subtil
                 drawCircle(
                     color = Color.White,
-                    radius = 1.5.dp.toPx(),
-                    center = Offset(w * 0.75f, h * 0.25f)
+                    radius = 1.2.dp.toPx(),
+                    center = center.copy(x = center.x + 1.5.dp.toPx(), y = h * 0.55f - 1.5.dp.toPx())
                 )
             }
         }
 
         if (showText) {
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.Black)) {
+                    withStyle(SpanStyle(
+                        fontWeight = FontWeight.Black,
+                        color = Color.Black,
+                        letterSpacing = (-0.5).sp
+                    )) {
                         append("MY")
                     }
-                    withStyle(SpanStyle(fontWeight = FontWeight.Light, color = Color(0xFFFF5722))) {
+                    withStyle(SpanStyle(
+                        fontWeight = FontWeight.Light,
+                        color = sunsetOrange,
+                        letterSpacing = 2.sp
+                    )) {
                         append("SOUQ")
                     }
                 },
-                fontSize = 22.sp,
-                letterSpacing = (-1).sp,
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +18,11 @@ import com.example.mysouq.ui.components.ErrorState
 import com.example.mysouq.ui.components.ProductCard
 import com.example.mysouq.ui.viewmodel.FavoritesViewModel
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.example.mysouq.R
+import com.example.mysouq.ui.theme.ArtisanCream
+
 @Composable
 fun FavoritesScreen(
     viewModel: FavoritesViewModel,
@@ -26,20 +33,20 @@ fun FavoritesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(ArtisanCream)
     ) {
         Text(
-            text = "Mes Coups de Cœur",
-            style = MaterialTheme.typography.headlineSmall,
+            text = stringResource(R.string.favorites_title),
+            style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(16.dp),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.outline
         )
 
         when (val state = uiState) {
             is UiState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = Color(0xFFFF5722))
                 }
             }
             is UiState.Success -> {
@@ -49,8 +56,8 @@ fun FavoritesScreen(
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.data, key = { it.id }) { product ->
@@ -78,20 +85,24 @@ fun FavoritesScreen(
 fun EmptyFavorites() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "💝",
-                style = MaterialTheme.typography.displayLarge
+            Icon(
+                Icons.Default.Favorite,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = MaterialTheme.colorScheme.outlineVariant
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Aucun favori pour le moment",
+                text = stringResource(R.string.favorites_empty_title),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline
+                color = Color.Black,
+                fontWeight = FontWeight.Black
             )
             Text(
-                text = "Explorez nos trésors pour en ajouter !",
+                text = stringResource(R.string.favorites_empty_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }

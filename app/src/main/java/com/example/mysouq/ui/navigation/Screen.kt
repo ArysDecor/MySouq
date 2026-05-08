@@ -2,6 +2,9 @@ package com.example.mysouq.ui.navigation
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
+    object Onboarding : Screen("onboarding")
+    object Login : Screen("login")
+    object Register : Screen("register")
     object Home : Screen("home")
     object ProductDetail : Screen("product_detail/{productId}") {
         fun createRoute(productId: Int) = "product_detail/$productId"

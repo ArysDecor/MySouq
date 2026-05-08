@@ -23,6 +23,11 @@ import com.example.mysouq.ui.common.UiState
 import com.example.mysouq.ui.components.ErrorState
 import com.example.mysouq.ui.viewmodel.CartViewModel
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import com.example.mysouq.ui.theme.ArtisanCream
+
 @Composable
 fun CartScreen(viewModel: CartViewModel) {
     val uiState by viewModel.uiState.collectAsState()
@@ -32,12 +37,12 @@ fun CartScreen(viewModel: CartViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(ArtisanCream)
     ) {
         when (val state = uiState) {
             is UiState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = Color(0xFFFF5722))
                 }
             }
             is UiState.Success -> {
@@ -68,16 +73,24 @@ fun CartScreen(viewModel: CartViewModel) {
 fun EmptyCart(orderCount: Int) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🛒", style = MaterialTheme.typography.displayLarge)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Votre panier est vide", style = MaterialTheme.typography.titleLarge)
-            if (orderCount > 0) {
-                Text(
-                    "Vous avez déjà passé $orderCount commandes !",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            Icon(
+                Icons.Default.ShoppingCart,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = MaterialTheme.colorScheme.outlineVariant
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                "Votre panier est vide", 
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Découvrez nos trésors de l'artisanat.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline
+            )
         }
     }
 }
@@ -91,24 +104,38 @@ fun CartContent(
     onRemove: (Int) -> Unit,
     onCheckout: () -> Unit
 ) {
+    val sunsetGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFF5722),
+            Color(0xFFFF4081)
+        )
+    )
+
     Scaffold(
+        containerColor = ArtisanCream,
         bottomBar = {
             Surface(
                 tonalElevation = 8.dp,
-                shadowElevation = 8.dp
+                shadowElevation = 12.dp,
+                color = Color.White,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(24.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("Total", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                "Total à payer", 
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.outline
+                            )
                             Text(
                                 "$total DH",
                                 style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = Color.Black,
                                 fontWeight = FontWeight.Black
                             )
                         }
@@ -117,9 +144,12 @@ fun CartContent(
                             modifier = Modifier
                                 .height(56.dp)
                                 .fillMaxWidth(0.6f),
-                            shape = MaterialTheme.shapes.medium
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFFF5722)
+                            )
                         ) {
-                            Text("Commander")
+                            Text("Commander", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         }
                     }
                 }
@@ -131,14 +161,15 @@ fun CartContent(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Text(
-                    text = "Mon Panier (${items.size})",
-                    style = MaterialTheme.typography.headlineSmall,
+                    text = "MON PANIER",
+                    style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
             }
             items(items, key = { it.product.id }) { item ->
@@ -146,7 +177,8 @@ fun CartContent(
                     item = item,
                     onIncrease = { onUpdateQuantity(item.product.id, item.quantity + 1) },
                     onDecrease = { onUpdateQuantity(item.product.id, item.quantity - 1) },
-                    onRemove = { onRemove(item.product.id) }
+                    onRemove = { onRemove(item.product.id) },
+                    gradient = sunsetGradient
                 )
             }
         }
@@ -158,13 +190,14 @@ fun CartItemRow(
     item: CartItem,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    gradient: Brush
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = MaterialTheme.shapes.medium
+        shape = RoundedCornerShape(20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -176,42 +209,42 @@ fun CartItemRow(
                 model = item.product.imageUrl,
                 contentDescription = item.product.name,
                 modifier = Modifier
-                    .size(90.dp)
-                    .clip(MaterialTheme.shapes.small),
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     item.product.name, 
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Black,
                     maxLines = 1
                 )
                 Text(
                     "${item.product.price} DH", 
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(0xFFFF5722),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.small)
+                        .background(ArtisanCream, RoundedCornerShape(8.dp))
                         .padding(horizontal = 4.dp)
                 ) {
                     IconButton(onClick = onDecrease, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Remove, contentDescription = "Réduire", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Remove, contentDescription = "Réduire", modifier = Modifier.size(18.dp), tint = Color.Black)
                     }
                     Text(
                         text = "${item.quantity}",
-                        modifier = Modifier.padding(horizontal = 12.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Black
                     )
                     IconButton(onClick = onIncrease, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Add, contentDescription = "Augmenter", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Add, contentDescription = "Augmenter", modifier = Modifier.size(18.dp), tint = Color.Black)
                     }
                 }
             }
@@ -222,7 +255,7 @@ fun CartItemRow(
                 Icon(
                     Icons.Default.Delete, 
                     contentDescription = "Supprimer", 
-                    tint = MaterialTheme.colorScheme.error,
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f),
                     modifier = Modifier.size(20.dp)
                 )
             }

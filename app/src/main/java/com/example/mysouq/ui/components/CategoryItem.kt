@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.foundation.border
+import com.example.mysouq.ui.theme.ArtisanCream
 
 @Composable
 fun CategoryItem(
@@ -31,20 +32,20 @@ fun CategoryItem(
         modifier = modifier
             .clickable(
                 onClick = onClick,
-                onClickLabel = "Sélectionner la catégorie $label" // A11y
+                onClickLabel = "Sélectionner $label"
             )
     ) {
         Box(
             modifier = Modifier
-                .size(64.dp)
+                .size(72.dp)
                 .clip(CircleShape)
                 .background(
-                    if (isSelected) MaterialTheme.colorScheme.primaryContainer 
-                    else MaterialTheme.colorScheme.surfaceVariant
+                    if (isSelected) Color(0xFFFFE0B2)
+                    else Color.White
                 )
                 .border(
-                    width = if (isSelected) 2.dp else 0.dp,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    width = if (isSelected) 2.dp else 1.dp,
+                    color = if (isSelected) Color(0xFFFF5722) else MaterialTheme.colorScheme.outlineVariant,
                     shape = CircleShape
                 )
                 .padding(8.dp),
@@ -52,16 +53,17 @@ fun CategoryItem(
         ) {
             Text(
                 text = icon, 
-                fontSize = 28.sp,
-                modifier = Modifier.clearAndSetSemantics { } // Icon is decorative, label below handles meaning
+                fontSize = 32.sp,
+                modifier = Modifier.clearAndSetSemantics { }
             )
         }
         Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.padding(top = 8.dp)
+            text = label.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = if (isSelected) Color(0xFFE65100) else MaterialTheme.colorScheme.outline,
+            fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold,
+            modifier = Modifier.padding(top = 12.dp),
+            letterSpacing = 1.sp
         )
     }
 }

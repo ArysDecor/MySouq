@@ -50,24 +50,26 @@ fun ProductCardShimmer() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .background(Color.White, RoundedCornerShape(20.dp))
+            .padding(12.dp)
     ) {
         ShimmerLoading(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(180.dp),
+            shape = RoundedCornerShape(16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        ShimmerLoading(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(20.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         ShimmerLoading(
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .height(20.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        ShimmerLoading(
-            modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .height(14.dp)
+                .fillMaxWidth(0.5f)
+                .height(16.dp)
         )
     }
 }

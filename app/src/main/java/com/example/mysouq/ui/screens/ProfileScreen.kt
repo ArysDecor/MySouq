@@ -1,10 +1,13 @@
 package com.example.mysouq.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -14,10 +17,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.mysouq.domain.model.User
 import com.example.mysouq.ui.viewmodel.ProfileViewModel
 
@@ -34,7 +43,7 @@ fun ProfileScreen(
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(0xFFFF5722))
         }
     } else {
         val user = uiState.user
@@ -64,63 +73,76 @@ fun ProfileContent(
     onNavigateToPayments: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
+    val sunsetGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFF5722),
+            Color(0xFFFF4081)
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        // Header
+        // Header avec Dégradé Premium
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(32.dp),
+                .background(sunsetGradient)
+                .padding(start = 32.dp, top = 64.dp, end = 32.dp, bottom = 48.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Surface(
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier
+                        .size(110.dp)
+                        .border(4.dp, Color.White.copy(alpha = 0.3f), CircleShape),
                     shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary,
-                    tonalElevation = 4.dp
+                    color = Color.White.copy(alpha = 0.2f),
+                    tonalElevation = 8.dp
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
                         modifier = Modifier
-                            .padding(20.dp)
+                            .padding(24.dp)
                             .fillMaxSize(),
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = Color.White
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = user.name,
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    letterSpacing = (-0.5).sp
                 )
-                Text(
-                    text = user.email,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                )
+                Surface(
+                    color = Color.Black.copy(alpha = 0.2f),
+                    shape = CircleShape,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(
+                        text = user.email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Mon Compte",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+        Column(modifier = Modifier.padding(20.dp)) {
+            SectionTitle("MON COMPTE")
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column {
                     ProfileMenuItem(
@@ -129,14 +151,14 @@ fun ProfileContent(
                         trailing = if (orderCount > 0) "$orderCount" else null,
                         onClick = onNavigateToOrders
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ProfileMenuItem(
                         icon = Icons.Default.LocationOn,
                         label = "Adresses de livraison",
-                        trailing = user.city ?: "Non définie",
+                        trailing = user.city,
                         onClick = onNavigateToAddresses
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ProfileMenuItem(
                         icon = Icons.Default.Payment, 
                         label = "Modes de paiement",
@@ -145,19 +167,15 @@ fun ProfileContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                text = "Préférences",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            SectionTitle("PRÉFÉRENCES")
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column {
                     ProfileMenuItem(
@@ -165,7 +183,7 @@ fun ProfileContent(
                         label = "Notifications",
                         onClick = { /* Action */ }
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ProfileMenuItem(
                         icon = Icons.Default.Settings, 
                         label = "Paramètres de l'application",
@@ -174,20 +192,46 @@ fun ProfileContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            OutlinedButton(
+            // Logout Button - Refonte Senior
+            Surface(
                 onClick = onLogout,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                border = ButtonDefaults.outlinedButtonBorder.copy(brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .semantics { role = Role.Button },
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f),
+                contentColor = MaterialTheme.colorScheme.error,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f))
             ) {
-                Icon(Icons.Default.ExitToApp, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Se déconnecter")
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.ExitToApp, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("Se déconnecter", fontWeight = FontWeight.Black, style = MaterialTheme.typography.bodyLarge)
+                }
             }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
+}
+
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.Black,
+        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
+        modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+        letterSpacing = 1.5.sp
+    )
 }
 
 @Composable
@@ -220,9 +264,11 @@ fun GuestProfileContent(onLoginClick: () -> Unit) {
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             onClick = onLoginClick,
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722))
         ) {
-            Text("Se connecter")
+            Text("Se connecter", fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -234,45 +280,58 @@ fun ProfileMenuItem(
     trailing: String? = null,
     onClick: () -> Unit
 ) {
-    Row(
+    Surface(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .semantics { role = Role.Button },
+        color = Color.Transparent
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
-        if (trailing != null) {
-            Surface(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = CircleShape
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 18.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon Container - Senior Touch : Fond subtil pour chaque icône
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = trailing,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black.copy(alpha = 0.8f),
+                modifier = Modifier.weight(1f)
+            )
+            
+            if (trailing != null) {
+                Text(
+                    text = trailing,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+            
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.outline,
-            modifier = Modifier.size(20.dp)
-        )
     }
 }

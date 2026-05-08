@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">سوقي</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_favorites">المفضلة</string>
+    <string name="nav_cart">السلة</string>
+    <string name="nav_profile">حسابي</string>
+
+    <!-- General -->
+    <string name="back">رجوع</string>
+    <string name="settings">الإعدادات</string>
+    <string name="about">حول</string>
+    <string name="logout">خروج</string>
+
+    <!-- About Screen -->
+    <string name="about_slogan">أصالة</string>
+    <string name="about_mission_title">مهمتنا</string>
+    <string name="about_mission_text">وصف</string>
+    <string name="about_developed_by">يحيى</string>
+
+    <!-- Onboarding Screen -->
+    <string name="onboarding_title">أصالة\n&amp; تقاليد</string>
+    <string name="onboarding_subtitle">اكتشف روعة الصناعة التقليدية المغربية، من فاس إلى مراكش.</string>
+    <string name="onboarding_explore">استكشف الكنوز</string>
+    <string name="onboarding_login">تسجيل الدخول</string>
+
+    <!-- Favorites Screen -->
+    <string name="favorites_title">المفضلة</string>
+    <string name="favorites_empty_title">لا توجد مفضلات حاليا</string>
+    <string name="favorites_empty_subtitle">استكشف كنوزنا لإضافتها هنا!</string>
+
+    <!-- Categories Screen -->
+    <string name="categories_title">تصفح الفئات</string>
+</resources>

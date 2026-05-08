@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mysouq.ui.components.AppLogo
 
+import androidx.compose.ui.res.stringResource
+import com.example.mysouq.R
+
 @Composable
 fun OnboardingScreen(
     onExploreClick: () -> Unit,
@@ -59,7 +62,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Authenticité\n& Tradition",
+                text = stringResource(R.string.onboarding_title),
                 color = Color.White,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Black,
@@ -69,7 +72,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Découvrez l'authenticité de l'artisanat marocain, de Fès à Marrakech.",
+                text = stringResource(R.string.onboarding_subtitle),
                 color = Color.White.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge
@@ -82,9 +85,12 @@ fun OnboardingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFF5722)
+                )
             ) {
-                Text("Explorer les Trésors", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.onboarding_explore), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -98,7 +104,7 @@ fun OnboardingScreen(
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                 border = ButtonDefaults.outlinedButtonBorder.copy(brush = androidx.compose.ui.graphics.SolidColor(Color.White))
             ) {
-                Text("Se connecter", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.onboarding_login), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
             }
             
             Spacer(modifier = Modifier.height(48.dp))

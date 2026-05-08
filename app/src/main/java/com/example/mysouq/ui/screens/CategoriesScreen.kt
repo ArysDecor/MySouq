@@ -17,6 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mysouq.domain.model.Category
 
+import androidx.compose.ui.res.stringResource
+import com.example.mysouq.R
+import com.example.mysouq.ui.theme.ArtisanCream
+
 @Composable
 fun CategoriesScreen(
     onCategoryClick: (Category) -> Unit
@@ -24,14 +28,15 @@ fun CategoriesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(ArtisanCream)
             .padding(16.dp)
     ) {
         Text(
-            text = "Parcourir les catégories",
-            style = MaterialTheme.typography.headlineSmall,
+            text = stringResource(R.string.categories_title),
+            style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.padding(bottom = 24.dp, top = 8.dp)
         )
 
         LazyVerticalGrid(
@@ -51,29 +56,29 @@ fun CategoryCard(category: Category, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp)
+            .height(140.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Surface(
-                    modifier = Modifier.size(60.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    modifier = Modifier.size(64.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFFFE0B2).copy(alpha = 0.5f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = category.icon, fontSize = 32.sp)
+                        Text(text = category.icon, fontSize = 36.sp)
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = category.displayName,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    fontWeight = FontWeight.Black,
+                    color = Color.Black
                 )
             }
         }

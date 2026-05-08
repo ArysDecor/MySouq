@@ -17,6 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.mysouq.ui.theme.ArtisanCream
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderTrackingScreen(
@@ -24,14 +27,18 @@ fun OrderTrackingScreen(
     onBack: () -> Unit
 ) {
     Scaffold(
+        containerColor = ArtisanCream,
         topBar = {
-            TopAppBar(
-                title = { Text("Suivi de commande", fontWeight = FontWeight.Bold) },
+            CenterAlignedTopAppBar(
+                title = { Text("SUIVI DE COMMANDE", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
         }
     ) { padding ->
@@ -39,29 +46,31 @@ fun OrderTrackingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.background)
                 .padding(24.dp)
         ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Text(
                             text = "Commande #$orderId", 
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            fontWeight = FontWeight.Black,
+                            color = Color.Black
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Passée le 24 mai 2024", 
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.outline
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(40.dp))
             }
 
             item {
@@ -96,9 +105,12 @@ fun OrderTrackingScreen(
                 Button(
                     onClick = { /* View details */ },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = MaterialTheme.shapes.medium
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF5722)
+                    )
                 ) {
-                    Text("Détails de la commande", fontWeight = FontWeight.Bold)
+                    Text("Détails de la commande", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 }
             }
         }
@@ -116,11 +128,11 @@ fun TrackingStep(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(
                         if (isCompleted) Color(0xFF4CAF50) 
-                        else MaterialTheme.colorScheme.surfaceVariant
+                        else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -137,23 +149,24 @@ fun TrackingStep(
                         .fillMaxHeight()
                         .background(
                             if (isCompleted) Color(0xFF4CAF50) 
-                            else MaterialTheme.colorScheme.surfaceVariant
+                            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                 )
             }
         }
         
-        Column(modifier = Modifier.padding(start = 16.dp, bottom = 32.dp)) {
+        Column(modifier = Modifier.padding(start = 20.dp, bottom = 40.dp)) {
             Text(
                 text = title, 
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isCompleted) FontWeight.Bold else FontWeight.Normal,
-                color = if (isCompleted) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = if (isCompleted) FontWeight.Black else FontWeight.Bold,
+                color = if (isCompleted) Color.Black else MaterialTheme.colorScheme.outline
             )
             Text(
                 text = date, 
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
