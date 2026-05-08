@@ -1,7 +1,9 @@
-﻿package com.example.mysouq.ui.screens
+package com.example.mysouq.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -9,20 +11,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.mysouq.ui.components.AppLogo
-
-import androidx.compose.ui.res.stringResource
 import com.example.mysouq.R
+import com.example.mysouq.ui.components.AppLogo
 
 @Composable
 fun OnboardingScreen(
-    onExploreClick: () -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onVisitClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         AsyncImage(
@@ -80,34 +83,49 @@ fun OnboardingScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
+            // Option 1: Se connecter (Primaire)
             Button(
-                onClick = onExploreClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF5722)
-                )
-            ) {
-                Text(stringResource(R.string.onboarding_explore), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedButton(
                 onClick = onLoginClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                border = ButtonDefaults.outlinedButtonBorder.copy(brush = androidx.compose.ui.graphics.SolidColor(Color.White))
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722))
             ) {
-                Text(stringResource(R.string.onboarding_login), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Text("Se connecter", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Option 2: S'inscrire (Secondaire)
+            OutlinedButton(
+                onClick = onRegisterClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+            ) {
+                Text("Créer un compte", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Option 3: Visiter (Lien)
+            TextButton(
+                onClick = onVisitClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "Continuer en tant qu'invité", 
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium,
+                    textDecoration = TextDecoration.Underline
+                )
             }
             
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

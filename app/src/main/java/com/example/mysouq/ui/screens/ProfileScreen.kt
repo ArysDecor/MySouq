@@ -243,33 +243,58 @@ fun GuestProfileContent(onLoginClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = null,
-            modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.outline
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+        // Icone Artisanat subtile pour les invités
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
         Text(
-            text = "Vous n'êtes pas connecté",
+            text = "Bienvenue, Voyageur",
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Black,
+            color = Color.Black
         )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
         Text(
-            text = "Connectez-vous pour voir vos commandes et vos adresses.",
+            text = "Connectez-vous pour sauvegarder vos trésors favoris et suivre vos commandes.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.outline
+            color = MaterialTheme.colorScheme.outline,
+            lineHeight = 22.sp
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        
+        Spacer(modifier = Modifier.height(48.dp))
+        
         Button(
             onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722))
         ) {
-            Text("Se connecter", fontWeight = FontWeight.Bold)
+            Text("Se connecter / S'inscrire", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Découvrez l'artisanat marocain sans limites",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
     }
 }
 

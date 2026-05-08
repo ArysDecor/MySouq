@@ -29,7 +29,6 @@ import com.example.mysouq.ui.screens.*
 import com.example.mysouq.ui.theme.MySouqTheme
 import com.example.mysouq.ui.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,19 +38,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
-            val language by settingsViewModel.language.collectAsState()
-
-            LaunchedEffect(language) {
-                val currentLocale = resources.configuration.locales[0].language
-                if (currentLocale != language) {
-                    val locale = Locale(language)
-                    Locale.setDefault(locale)
-                    val config = resources.configuration
-                    config.setLocale(locale)
-                    resources.updateConfiguration(config, resources.displayMetrics)
-                    recreate()
-                }
-            }
 
             MySouqTheme(darkTheme = isDarkMode) {
                 MainApp()
@@ -170,7 +156,8 @@ fun MainApp() {
         ) {
             composable(Screen.Splash.route) {
                 SplashScreen(onNavigateToHome = {
-                    val nextRoute = if (currentUser == null) Screen.Onboarding.route else Screen.Home.route
+                    // Si on est connect├®, on va direct ├á Home, sinon Onboarding
+                    val nextRoute = if (currentUser != null) Screen.Home.route else Screen.Onboarding.route
                     navController.navigate(nextRoute) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
@@ -178,8 +165,13 @@ fun MainApp() {
             }
             composable(Screen.Onboarding.route) {
                 OnboardingScreen(
-                    onExploreClick = { navController.navigate(Screen.Home.route) },
-                    onLoginClick = { navController.navigate(Screen.Login.route) }
+                    onLoginClick = { navController.navigate(Screen.Login.route) },
+                    onRegisterClick = { navController.navigate(Screen.Register.route) },
+                    onVisitClick = { 
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable(Screen.Login.route) {
@@ -219,7 +211,7 @@ fun MainApp() {
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
                 val viewModel: ProductDetailViewModel = hiltViewModel()
-                ProductDetailScreen( // Changed back but I will ensure the content is used properly
+                ProductDetailScreen(
                     productId = productId,
                     viewModel = viewModel,
                     onBack = { navController.popBackStack() }

@@ -25,8 +25,6 @@ class ProfileViewModel @Inject constructor(
 
     init {
         observeData()
-        // For demonstration: Initialize a mock user if none exists
-        checkAndInitMockUser()
     }
 
     private fun observeData() {
@@ -36,22 +34,6 @@ class ProfileViewModel @Inject constructor(
         ) { user, count ->
             _uiState.update { it.copy(user = user, orderCount = count, isLoading = false) }
         }.launchIn(viewModelScope)
-    }
-
-    private fun checkAndInitMockUser() {
-        viewModelScope.launch {
-            val currentUser = userPreferencesRepository.user.first()
-            if (currentUser == null) {
-                userPreferencesRepository.saveUser(
-                    User(
-                        id = "1",
-                        name = "Ahmed Benani",
-                        email = "ahmed.benani@email.com",
-                        city = "Marrakech"
-                    )
-                )
-            }
-        }
     }
 
     fun logout() {
