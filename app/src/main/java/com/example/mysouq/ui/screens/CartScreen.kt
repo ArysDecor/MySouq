@@ -29,7 +29,10 @@ import androidx.compose.ui.graphics.Color
 import com.example.mysouq.ui.theme.ArtisanCream
 
 @Composable
-fun CartScreen(viewModel: CartViewModel) {
+fun CartScreen(
+    viewModel: CartViewModel,
+    onCheckout: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState()
     val total by viewModel.totalPrice.collectAsState()
     val orderCount by viewModel.orderCount.collectAsState()
@@ -55,7 +58,7 @@ fun CartScreen(viewModel: CartViewModel) {
                         orderCount = orderCount,
                         onUpdateQuantity = viewModel::updateQuantity,
                         onRemove = viewModel::removeFromCart,
-                        onCheckout = viewModel::checkout
+                        onCheckout = onCheckout // Use the navigation action
                     )
                 }
             }

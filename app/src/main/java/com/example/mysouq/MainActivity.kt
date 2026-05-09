@@ -156,9 +156,8 @@ fun MainApp() {
         ) {
             composable(Screen.Splash.route) {
                 SplashScreen(onNavigateToHome = {
-                    // Si on est connect├®, on va direct ├á Home, sinon Onboarding
-                    val nextRoute = if (currentUser != null) Screen.Home.route else Screen.Onboarding.route
-                    navController.navigate(nextRoute) {
+                    // On affiche toujours l'Onboarding d'abord pour accueillir l'utilisateur
+                    navController.navigate(Screen.Onboarding.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 })
@@ -227,7 +226,22 @@ fun MainApp() {
                 )
             }
             composable(Screen.Cart.route) {
-                CartScreen(viewModel = cartViewModel)
+                CartScreen(
+                    viewModel = cartViewModel,
+                    onCheckout = { navController.navigate(Screen.Checkout.route) }
+                )
+            }
+            composable(Screen.Checkout.route) {
+                val viewModel: CheckoutViewModel = hiltViewModel()
+                CheckoutScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    onOrderSuccess = {
+                        navController.navigate(Screen.Orders.route) {
+                            popUpTo(Screen.Cart.route) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable(Screen.Profile.route) {
                 val viewModel: ProfileViewModel = hiltViewModel()
